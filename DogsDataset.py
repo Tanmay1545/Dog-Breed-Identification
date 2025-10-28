@@ -34,7 +34,8 @@ class DogsDataset(Dataset):
 		data['target'] = 1
 		#data['rank'] = data.groupby('breed').rank()['id']
 		if self.mode is 'train':
-			data_pivot = data.pivot('id', 'breed', 'target').reset_index().fillna(0)
+			data_pivot = data.pivot(index='id', columns='breed', values='target').reset_index().fillna(0)
+
 		else:
 			data_pivot = data.pivot('id','target').reset_index().fillna(0)
 		#data_pivot = data.pivot('id', 'breed').reset_index().fillna(0)
@@ -52,8 +53,9 @@ class DogsDataset(Dataset):
 								self.labels.iloc[idx, 0]+'.jpg')
 		image = Image.open(img_name)
 		
-		if self.mode is 'train':
-			labels = self.labels.iloc[idx, 1:].as_matrix().astype('float32')
+		if self.mode == 'train':
+			labels = self.labels.iloc[idx, 1:].to_numpy().astype('float32')
+
 			label = np.argmax(labels)
 		else:
 			label = self.labels.iloc[idx, 0]
